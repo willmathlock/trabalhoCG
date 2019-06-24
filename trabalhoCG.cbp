@@ -30,8 +30,18 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Linker>
+			<Add library="gdi32" />
+			<Add library="glu32" />
+			<Add library="glut32" />
+			<Add library="winmm" />
+			<Add library="opengl32" />
+		</Linker>
+		<Unit filename="RotatingPart.h" />
+		<Unit filename="ScalingPart.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
