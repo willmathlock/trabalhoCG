@@ -25,6 +25,7 @@ const float SCALE_STEP = 0.3f;
 std::string helper = "rX";
 GLint passo = 3;
 
+bool light = true;
 static float rotateX = 0;
 static float rotateY = 0;
 static float rotateZ = 0;
@@ -187,6 +188,7 @@ void init() {
 	GLfloat qaLightPosition[] = {1.5, 1.5, 0.0, 1};
 	glLightfv(GL_LIGHT0, GL_POSITION, qaLightPosition);
 
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
@@ -291,26 +293,7 @@ void displayRobot() {
 
 	glutSwapBuffers();
 }
-void especifica_parametros_visualizacao( void )
-{
-    // seleciona o tipo de matriz para a projecao
-    glMatrixMode( GL_PROJECTION );
 
-    // limpa (zera) as matrizes
-    glLoadIdentity();
-
-    // Especifica e configura a projecao perspectiva
-    gluPerspective( camera.ang , janela.aspecto , camera.inicio , camera.fim );
-
-    // Especifica sistema de coordenadas do modelo
-    glMatrixMode( GL_MODELVIEW );
-
-    // Inicializa sistema de coordenadas do modelo
-    glLoadIdentity();
-
-    // Especifica posicao da camera (o observador) e do alvo
-    gluLookAt( camera.posx , camera.posy , camera.posz , camera.alvox , camera.alvoy , camera.alvoz ,0,1,0);
-}
 void onKeyPressed(unsigned char key, int x, int y) {
 	switch (key) {
     case '+':
@@ -571,81 +554,14 @@ void onKeyPressed(unsigned char key, int x, int y) {
             }
         }
         break;
-    case 'i':
-        init();
-        break;
-    case 'I':
-        init();
-        break;
-    case 'A':
-        if ( camera.ang+passo < 180 )
-            camera.ang += passo;
-        break;
-    case 'a':
-        if ( camera.ang-passo > 0 )
-            camera.ang -= passo;
+
 	case 27: // ESC
 		exit(0);
 		return;
 	default:
 		return;
 	}
-	especifica_parametros_visualizacao();
 	glutPostRedisplay();
-}
-
-void teclas_especiais( GLint key , GLint x , GLint y )
-{
-    GLint modificador = glutGetModifiers();
-
-    if ( modificador & GLUT_ACTIVE_ALT)
-    {
-        // ALT pressionado
-    }
-    else
-    {
-        if ( key == GLUT_KEY_LEFT )
-        {
-            camera.posx  -= passo;
-            camera.alvox -= passo;
-        }
-
-        if ( key == GLUT_KEY_RIGHT )
-        {
-            camera.posx  += passo;
-            camera.alvox += passo;
-        }
-
-        if ( key == GLUT_KEY_UP )
-        {
-            camera.posy  += passo;
-            camera.alvoy += passo;
-        }
-
-        if ( key == GLUT_KEY_DOWN )
-        {
-            camera.posy  -= passo;
-            camera.alvoy -= passo;
-        }
-
-        if ( key == GLUT_KEY_PAGE_UP ) // aumenta o tamanho da window
-        {
-            camera.posz  -= passo;
-            camera.alvoz -= passo;
-        }
-
-        if ( key == GLUT_KEY_PAGE_DOWN) // diminui o tamanho da window
-        {
-            camera.posz  += passo;
-            camera.alvoz += passo;
-        }
-    }
-
-    especifica_parametros_visualizacao();
-
-    // como foi mudado dados que influenciam na visualizacao dos objetos,
-    // este comando obriga a executar a funcao de desenho (desenha)
-    glutPostRedisplay();
 }
 
 void resize(int width, int height) {
@@ -733,7 +649,6 @@ int main(int argc, char** argv) {
 	init();
 	glutDisplayFunc(displayRobot);
 	glutKeyboardFunc(onKeyPressed);
-	glutSpecialFunc( teclas_especiais );
 	glutReshapeFunc(resize);
 
 	glutCreateMenu(menu);
