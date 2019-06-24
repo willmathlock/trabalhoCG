@@ -23,6 +23,7 @@ const float ROTATE_STEP = 1.0f;
 const float TRANSLATE_STEP = 0.5f;
 const float SCALE_STEP = 0.3f;
 std::string helper = "rX";
+GLint passo = 3;
 
 static float rotateX = 0;
 static float rotateY = 0;
@@ -38,7 +39,7 @@ static float rotateLA[3] = {0, 0, 0};
 static float rotateRA[3] = {0, 0, 0};
 static float rotateLL[3] = {0, 0, 0};
 static float rotateRL[3] = {0, 0, 0};
-static float translateHead[3] = {0, 0.75, 0};
+static float translateHead[3] = {0, 0.75, -1};
 static float translateLA[3] = {-1, 0.1, 0};
 static float translateRA[3] = {1, 0.1, 0};
 static float translateLL[3] = {-0.25, -1, 0};
@@ -49,7 +50,29 @@ static float scaleRA[3] = {1, 0.2, 0.2};
 static float scaleLL[3] = {0.5, 1, 0.5};
 static float scaleRL[3] = {0.5, 1, 0.5};
 
-static float scaleWhole[3] = {1.5, 1.5, 1.5};
+ GLfloat scaleWhole[3] = {1.5, 1.5, 1.5};
+
+
+struct tipo_camera {
+    GLfloat posx;               // posicao x da camera
+    GLfloat posy;               // posicao y da camera
+    GLfloat posz;               // posicao z da camera
+    GLfloat alvox;              // alvo x da visualizacao
+    GLfloat alvoy;              // alvo y da visualizacao
+    GLfloat alvoz;              // alvo z da visualizacao
+    GLfloat ang;                // abertura da 'lente' - efeito de zoom
+    GLfloat inicio;             // inicio da area de visualizacao em profundidade
+    GLfloat fim;                // fim da area de visualizacao em profundidade
+};
+
+struct tipo_janela{
+    GLfloat largura;            // largura da janela
+    GLfloat altura;             // altura da jaanela
+    GLfloat aspecto;            // aspecto da janela (relacao entre largura e altura)
+};
+
+tipo_camera camera;
+tipo_janela janela;
 
 
 static RotatingPart currentRotatingPart = RotatingPart::WHOLE_ROBOT;
@@ -59,19 +82,107 @@ void init() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	//gluOrtho2D(-3.0f, 3.0, -3.0f, 3.0f);
-	glOrtho(-3.0, 3.0, -3.0, 3.0, -3.0, 3.0);
+    rotateX = 0;
+    rotateY = 0;
+    rotateZ = 0;
+    tX = 0.0f;
+    tY = 0.0f;
+    tZ = 0.0f;
+    sX = 1.0f;
+    sY = 2.0f;
+    sZ = 1.0f;
+
+    for(int i = 0; i < 3; i++){
+        rotateHead[i] = 0;
+        rotateLA[i] = 0;
+        rotateRA[i] = 0;
+        rotateLL[i] = 0;
+        rotateRL[i] = 0;
+    }
+    translateHead[0] = {0};
+    translateHead[1] = {0.75};
+    translateHead[2] = {-1};
+
+    translateLA[0] = {-1};
+    translateLA[1] = {0.1};
+    translateLA[2] = {0};
+
+    translateRA[0] = {1};
+    translateRA[1] = {0.1};
+    translateRA[2] = {0};
+
+    translateLL[0] = {-0.25};
+    translateLL[1] = {-1};
+    translateLL[2] = {0};
+
+
+    translateRL[0] = {0.25};
+    translateRL[1] = {-1};
+    translateRL[2] = {0};
+
+    scaleHead[0] = {0.75};
+    scaleHead[1] = {0.75};
+    scaleHead[2] = {0.75};
+
+    scaleLA[0] = {1};
+    scaleLA[1] = {0.2};
+    scaleLA[2] = {0.2};
+
+
+    scaleRA[0] = {1};
+    scaleRA[1] = {0.2};
+    scaleRA[2] = {0.2};
+
+    scaleLL[0] = {0.5};
+    scaleLL[1] = {1};
+    scaleLL[2] = {0.5};
+
+    scaleRL[0] = {0.5};
+    scaleRL[1] = {1};
+    scaleRL[2] = {0.5};
+
+    scaleWhole[0] = {1.5};
+    scaleWhole[1] = {1.5};
+    scaleWhole[2] = {1.5};
+
+
+	gluOrtho2D(-3.0f, 3.0, -3.0f, 3.0f);
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+	// habilita a transparenica
+    glEnable( GL_BLEND );
+
+    janela.largura = WINDOW_WIDTH;
+    janela.altura = WINDOW_HEIGHT;
+    janela.aspecto = janela.largura / janela.altura;
+    // define a forma de calculo da transparencia
+    glBlendFunc( GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA );
+
+    // Habilita antialiasing
+    glEnable( GL_LINE_SMOOTH );
+
+    // Solicita melhor qualidade
+    glHint( GL_LINE_SMOOTH_HINT , GL_NICEST );
 
 	GLfloat qaAmbientLight[] = {0.7, 0.7, 0.7, 1.0};
 	GLfloat qaDiffuseLight[] = {0.3, 0.3, 0.3, 1.0};
 	GLfloat qaSpecLight[] = {1.0, 1.0, 1.0, 1.0};
 
+    camera.posx   = 0;
+    camera.posy   = 0;
+    camera.posz   = 0;
+    camera.alvox  = 0;
+    camera.alvoy  = 0;
+    camera.alvoz  = 0;
+    camera.inicio = 0.1;
+    camera.fim    = 5000.0;
+    camera.ang    = 45;
+
+
 	glLightfv(GL_LIGHT0, GL_AMBIENT, qaAmbientLight);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, qaDiffuseLight);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecLight);
+//	glLightfv(GL_LIGHT0, GL_DIFFUSE, qaDiffuseLight);
+//	glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecLight);
 
 	GLfloat qaLightPosition[] = {1.5, 1.5, 0.0, 1};
 	glLightfv(GL_LIGHT0, GL_POSITION, qaLightPosition);
@@ -157,8 +268,8 @@ void displayRobot() {
 	GLfloat qaWhite[] = {1.0, 1.0, 1.0, 1.0};
 
 	glMaterialfv(GL_FRONT, GL_AMBIENT, qaGreen);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, qaWhite);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, qaWhite);
+//	glMaterialfv(GL_FRONT, GL_DIFFUSE, qaWhite);
+//	glMaterialfv(GL_FRONT, GL_SPECULAR, qaWhite);
 	glMaterialf(GL_FRONT, GL_SHININESS, 60.0);
 
 
@@ -177,9 +288,29 @@ void displayRobot() {
 	displayRobotLeftLeg();
 	displayRobotRightLeg();
 
+
 	glutSwapBuffers();
 }
+void especifica_parametros_visualizacao( void )
+{
+    // seleciona o tipo de matriz para a projecao
+    glMatrixMode( GL_PROJECTION );
 
+    // limpa (zera) as matrizes
+    glLoadIdentity();
+
+    // Especifica e configura a projecao perspectiva
+    gluPerspective( camera.ang , janela.aspecto , camera.inicio , camera.fim );
+
+    // Especifica sistema de coordenadas do modelo
+    glMatrixMode( GL_MODELVIEW );
+
+    // Inicializa sistema de coordenadas do modelo
+    glLoadIdentity();
+
+    // Especifica posicao da camera (o observador) e do alvo
+    gluLookAt( camera.posx , camera.posy , camera.posz , camera.alvox , camera.alvoy , camera.alvoz ,0,1,0);
+}
 void onKeyPressed(unsigned char key, int x, int y) {
 	switch (key) {
     case '+':
@@ -408,7 +539,7 @@ void onKeyPressed(unsigned char key, int x, int y) {
             }else if(currentRotatingPart == RotatingPart::RIGHT_LEG){
                 scaleRL[0] -= SCALE_STEP;
             }else{
-                scaleWhole[0] += SCALE_STEP;
+                scaleWhole[0] -= SCALE_STEP;
             }
         }else if(helper == "sY"){
             if (currentRotatingPart == RotatingPart::HEAD){
@@ -440,15 +571,81 @@ void onKeyPressed(unsigned char key, int x, int y) {
             }
         }
         break;
+    case 'i':
+        init();
+        break;
+    case 'I':
+        init();
+        break;
+    case 'A':
+        if ( camera.ang+passo < 180 )
+            camera.ang += passo;
+        break;
+    case 'a':
+        if ( camera.ang-passo > 0 )
+            camera.ang -= passo;
 	case 27: // ESC
 		exit(0);
 		return;
-
 	default:
 		return;
 	}
-
+	especifica_parametros_visualizacao();
 	glutPostRedisplay();
+}
+
+void teclas_especiais( GLint key , GLint x , GLint y )
+{
+    GLint modificador = glutGetModifiers();
+
+    if ( modificador & GLUT_ACTIVE_ALT)
+    {
+        // ALT pressionado
+    }
+    else
+    {
+        if ( key == GLUT_KEY_LEFT )
+        {
+            camera.posx  -= passo;
+            camera.alvox -= passo;
+        }
+
+        if ( key == GLUT_KEY_RIGHT )
+        {
+            camera.posx  += passo;
+            camera.alvox += passo;
+        }
+
+        if ( key == GLUT_KEY_UP )
+        {
+            camera.posy  += passo;
+            camera.alvoy += passo;
+        }
+
+        if ( key == GLUT_KEY_DOWN )
+        {
+            camera.posy  -= passo;
+            camera.alvoy -= passo;
+        }
+
+        if ( key == GLUT_KEY_PAGE_UP ) // aumenta o tamanho da window
+        {
+            camera.posz  -= passo;
+            camera.alvoz -= passo;
+        }
+
+        if ( key == GLUT_KEY_PAGE_DOWN) // diminui o tamanho da window
+        {
+            camera.posz  += passo;
+            camera.alvoz += passo;
+        }
+    }
+
+    especifica_parametros_visualizacao();
+
+    // como foi mudado dados que influenciam na visualizacao dos objetos,
+    // este comando obriga a executar a funcao de desenho (desenha)
+    glutPostRedisplay();
 }
 
 void resize(int width, int height) {
@@ -536,6 +733,7 @@ int main(int argc, char** argv) {
 	init();
 	glutDisplayFunc(displayRobot);
 	glutKeyboardFunc(onKeyPressed);
+	glutSpecialFunc( teclas_especiais );
 	glutReshapeFunc(resize);
 
 	glutCreateMenu(menu);
