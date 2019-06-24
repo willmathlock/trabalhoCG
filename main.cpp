@@ -7,6 +7,7 @@ Robo chave 0.1
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <string>
 
 #include <GL/glut.h>
 #define INT_MAX 5
@@ -18,9 +19,10 @@ using namespace OpenGlRobot;
 using namespace scaleRobot;
 
 const int WINDOW_WIDTH = 700, WINDOW_HEIGHT = 500;
-const float ROTATE_STEP = 5.0f;
+const float ROTATE_STEP = 1.0f;
 const float TRANSLATE_STEP = 1.0f;
 const float SCALE_STEP = 0.3f;
+std::string helper = "rX";
 
 static float rotateX = 0;
 static float rotateY = 0;
@@ -31,10 +33,25 @@ float tZ = 0.0f;
 float sX = 1.0f;
 float sY = 2.0f;
 float sZ = 1.0f;
-static float rotateHeadY = 0;
+static float rotateHead[3] = {0, 0, 0};
+static float rotateLA[3] = {0, 0, 0};
+static float rotateRA[3] = {0, 0, 0};
+static float rotateLL[3] = {0, 0, 0};
+static float rotateRL[3] = {0, 0, 0};
+static float translateHead[3] = {0, 0.75, 0};
+static float translateLA[3] = {0, 0, 0};
+static float translateRA[3] = {0, 0, 0};
+static float translateLL[3] = {0, 0, 0};
+static float translateRL[3] = {0, 0, 0};
+static float scaleHead[3] = {1, 1, 1};
+static float scaleLA[3] = {1, 1, 1};
+static float scaleRA[3] = {1, 1, 1};
+static float scaleLL[3] = {1, 1, 1};
+static float scaleRL[3] = {1, 1, 1};
+
 static float rotateLeftArmX = 0;
 static float rotateRightArmX = 0;
-static float scaleHead = 0.5;
+//static float scaleHead = 0.5;
 static float scaleLeftArm = 1;
 static float scaleRightArm = 1;
 static float scaleWhole = 1.5f;
@@ -98,10 +115,12 @@ void displayRobotBody() {
 
 void displayRobootHead() {
 	glPushMatrix();
-	glRotatef(rotateHeadY, 0.0, 1.0, 0.0);
-	glTranslatef(0.0, 0.75, 0.0);
-	glScalef(1.5f, 0.5f, 1.0f);
-	glutWireSphere(scaleHead, 50, 50);
+	glRotatef(rotateHead[0], 1, 0, 0);
+	glRotatef(rotateHead[1], 0, 1, 0);
+	glRotatef(rotateHead[2], 0, 0, 1);
+	glTranslatef(translateHead[0], translateHead[1], translateHead[3]);
+	glScalef(scaleHead[0], scaleHead[1], scaleHead[2]);
+	glutWireSphere(0.5, 15, 50);
 	glScalef(1.0f, 2.0f, 1.0f);
 	glPopMatrix();
 }
@@ -131,111 +150,107 @@ void displayRobot() {
 
 void onKeyPressed(unsigned char key, int x, int y) {
 	switch (key) {
-	case 'X':
-		if (currentRotatingPart == RotatingPart::LEFT_ARM)
-		{
-			rotateLeftArmX += ROTATE_STEP;
-		}
-		else if (currentRotatingPart == RotatingPart::RIGHT_ARM)
-		{
-			rotateRightArmX += ROTATE_STEP;
-		}
-		else
-		{
-			rotateX += ROTATE_STEP;
-		}
-
+    case '+':
+            if(helper == "rX"){
+                if (currentRotatingPart == RotatingPart::HEAD){
+                    rotateHead[0] += ROTATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_ARM){
+                    rotateLA[0] += ROTATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_ARM){
+                    rotateRA[0] += ROTATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_LEG){
+                    rotateLL[0] += ROTATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_LEG){
+                    rotateLL[0] += ROTATE_STEP;
+                }else{
+                    rotateX += ROTATE_STEP;
+                }
+            }else if(helper == "rY"){
+                if (currentRotatingPart == RotatingPart::HEAD){
+                    rotateHead[1] += ROTATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_ARM){
+                    rotateLA[1] += ROTATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_ARM){
+                    rotateRA[1] += ROTATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_LEG){
+                    rotateLL[1] += ROTATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_LEG){
+                    rotateLL[1] += ROTATE_STEP;
+                }else{
+                    rotateY += ROTATE_STEP;
+                }
+            }else if(helper == "rZ"){
+                if (currentRotatingPart == RotatingPart::HEAD){
+                    rotateHead[2] += ROTATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_ARM){
+                    rotateLA[2] += ROTATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_ARM){
+                    rotateRA[2] += ROTATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_LEG){
+                    rotateLL[2] += ROTATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_LEG){
+                    rotateLL[2] += ROTATE_STEP;
+                }else{
+                    rotateZ += ROTATE_STEP;
+                }
+            }else if(helper == "tX"){
+                if (currentRotatingPart == RotatingPart::HEAD){
+                    translateHead[0] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_ARM){
+                    translateLA[0] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_ARM){
+                    translateRA[0] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_LEG){
+                    translateLL[0] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_LEG){
+                    translateRL[0] += TRANSLATE_STEP;
+                }else{
+                    tX += ROTATE_STEP;
+                }
+            }else if(helper == "tY"){
+                if (currentRotatingPart == RotatingPart::HEAD){
+                    translateHead[1] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_ARM){
+                    translateLA[1] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_ARM){
+                    translateRA[1] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_LEG){
+                    translateLL[1] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_LEG){
+                    translateRL[1] += TRANSLATE_STEP;
+                }else{
+                    tY += ROTATE_STEP;
+                }
+            }else if(helper == "tZ"){
+                if (currentRotatingPart == RotatingPart::HEAD){
+                    translateHead[2] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_ARM){
+                    translateLA[2] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_ARM){
+                    translateRA[2] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_LEG){
+                    translateLL[2] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_LEG){
+                    translateRL[2] += TRANSLATE_STEP;
+                }else{
+                    tZ += ROTATE_STEP;
+                }
+            }else if(helper == "sX"){
+                if (currentRotatingPart == RotatingPart::HEAD){
+                    scaleHead[0] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_ARM){
+                    translateLA[2] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_ARM){
+                    translateRA[2] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::LEFT_LEG){
+                    translateLL[2] += TRANSLATE_STEP;
+                }else if(currentRotatingPart == RotatingPart::RIGHT_LEG){
+                    translateRL[2] += TRANSLATE_STEP;
+                }else{
+                    tZ += ROTATE_STEP;
+                }
+            }
 		break;
-
-	case 'x':
-		if (currentRotatingPart == RotatingPart::LEFT_ARM)
-		{
-			rotateLeftArmX -= ROTATE_STEP;
-		}
-		else if (currentRotatingPart == RotatingPart::RIGHT_ARM)
-		{
-			rotateRightArmX -= ROTATE_STEP;
-		}
-		else
-		{
-			rotateX -= ROTATE_STEP;
-		}
-
-		break;
-
-	case 'Y':
-		if (currentRotatingPart == RotatingPart::HEAD)
-		{
-			rotateHeadY += ROTATE_STEP;
-		}
-		else
-		{
-			rotateY += ROTATE_STEP;
-		}
-
-		break;
-
-	case 'y':
-		if (currentRotatingPart == RotatingPart::HEAD)
-		{
-			rotateHeadY -= ROTATE_STEP;
-		}
-		else
-		{
-			rotateY -= ROTATE_STEP;
-		}
-
-		break;
-
-	case 'Z':
-		rotateZ += ROTATE_STEP;
-		break;
-
-	case 'z':
-		rotateZ -= ROTATE_STEP;
-		break;
-    case 'j':
-        tX -= TRANSLATE_STEP;
-        break;
-    case 'l':
-        tX += TRANSLATE_STEP;
-        break;
-    case 'i':
-        tY += TRANSLATE_STEP;
-        break;
-    case 'k':
-        tY -= TRANSLATE_STEP;
-        break;
-    case 'u':
-        tZ += TRANSLATE_STEP;
-        break;
-    case 'o':
-        tZ -= TRANSLATE_STEP;
-        break;
-    case 'm':
-        if(currentRotatingPart == RotatingPart::HEAD){
-            scaleHead -= 0.2;
-        }else if(currentRotatingPart == RotatingPart::LEFT_ARM){
-            scaleLeftArm -= SCALE_STEP;
-        }else if(currentRotatingPart == RotatingPart::RIGHT_ARM){
-            scaleRightArm -= SCALE_STEP;
-        }else{
-            scaleWhole -= SCALE_STEP;
-        }
-        break;
-
-    case 'M':
-        if(currentRotatingPart == RotatingPart::HEAD){
-            scaleHead += 0.2;
-        }else if(currentRotatingPart == RotatingPart::LEFT_ARM){
-            scaleLeftArm += SCALE_STEP;
-        }else if(currentRotatingPart == RotatingPart::RIGHT_ARM){
-            scaleRightArm += SCALE_STEP;
-        }else{
-            scaleWhole += SCALE_STEP;
-        }
-        break;
-
 
 	case 27: // ESC
 		exit(0);
@@ -262,23 +277,25 @@ void menu(int menuItem) {
 	switch (menuItem) {
 	case 0:
 		currentRotatingPart = RotatingPart::WHOLE_ROBOT;
-		currentScalingpart == currentRotatingPart;
 		break;
 	case 1:
 		currentRotatingPart = RotatingPart::HEAD;
-		currentScalingpart == currentRotatingPart;
 		break;
 	case 2:
 		currentRotatingPart = RotatingPart::LEFT_ARM;
-		currentScalingpart == currentRotatingPart;
 		break;
 	case 3:
 		currentRotatingPart = RotatingPart::RIGHT_ARM;
-		currentScalingpart == currentRotatingPart;
 		break;
 	case 4:
-		exit(0);
-		return;
+		currentRotatingPart = RotatingPart::LEFT_LEG;
+		break;
+    case 5:
+        currentRotatingPart = RotatingPart::RIGHT_LEG;
+        break;
+    case 6:
+        exit(0);
+        return;
 	default:
 		return;
 	}
@@ -286,9 +303,41 @@ void menu(int menuItem) {
 	glutPostRedisplay();
 }
 
-void addMenuItems() {
+void menu2(int menuItem){
+    switch(menuItem){
+        case 10:
+            helper = "rX";
+            break;
+        case 11:
+            helper = "rY";
+            break;
+        case 12:
+            helper = "rZ";
+            break;
+        case 13:
+            helper = "tX";
+            break;
+        case 14:
+            helper = "tY";
+            break;
+        case 15:
+            helper = "tZ";
+            break;
+        case 16:
+            helper = "sX";
+            break;
+        case 17:
+            helper = "sY";
+            break;
+        case 18:
+            helper = "tZ";
+            break;
+        default:
+            return;
 
+    }
 }
+
 
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
@@ -307,9 +356,24 @@ int main(int argc, char** argv) {
 	glutAddMenuEntry("Head", 1);
 	glutAddMenuEntry("Left arm", 2);
 	glutAddMenuEntry("Right arm", 3);
-	glutAddMenuEntry("---Others---", INT_MAX);
-	glutAddMenuEntry("Quit", 4);
+	glutAddMenuEntry("Left Leg", 4);
+	glutAddMenuEntry("Right Leg", 5);
+	glutAddMenuEntry("Quit", 6);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
+
+	glutCreateMenu(menu2);
+	glutAddMenuEntry("---Select current axis---", INT_MAX);
+	glutAddMenuEntry("rX", 10);
+	glutAddMenuEntry("rY", 11);
+	glutAddMenuEntry("rZ", 12);
+	glutAddMenuEntry("tX", 13);
+	glutAddMenuEntry("tY", 14);
+	glutAddMenuEntry("tZ", 15);
+	glutAddMenuEntry("sX", 16);
+	glutAddMenuEntry("sY", 17);
+	glutAddMenuEntry("sZ", 18);
+	glutAttachMenu(GLUT_LEFT_BUTTON);
+
 
 	glutMainLoop();
 }

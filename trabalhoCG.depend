@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1561327126 source:c:\users\immortal\documents\c\trabalhocg\main.cpp
+1561396156 source:c:\users\immortal\documents\c\trabalhocg\main.cpp
 	<stdlib.h>
 	<stdio.h>
 	<math.h>
@@ -7,7 +7,7 @@
 	"RotatingPart.h"
 	"ScalingPart.h"
 
-1561324414 c:\users\immortal\documents\c\trabalhocg\rotatingpart.h
+1561396140 c:\users\immortal\documents\c\trabalhocg\rotatingpart.h
 
 1561326179 c:\users\immortal\documents\c\trabalhocg\scalingpart.h
 
